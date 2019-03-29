@@ -39,7 +39,30 @@ int onebyte_release(struct inode *inode, struct file *filep) {
 }
 
 // TODO: Implement read.
+ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos) {
+	static int ended = 0;
+
+	if (ended) {
+		// There is nothing more to read.
+		ended = 0;
+		return 0;
+	}
+
+	ended = 1;
+
+	if (put_user(*onebyte_data, buf) ) {
+		return -EFAULT;
+	}
+
+
+	return 1;
+}
+
 // TODO: Implement write.
+ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos) {
+	get_user(*onebyte_data, buf);	
+	return 1;
+}
 
 static int onebyte_init(void) {
 	int result;
